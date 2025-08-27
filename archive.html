@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Archive - ADVTYDV</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="brand-animation-box">
+                    <canvas id="flowFieldCanvas"></canvas>
+                    <a href="index.html">ADVTYDV</a>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="archive.html" class="active">Archive</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="content">
+        <article class="text-column">
+            <p style="text-align: center; margin-top: 2rem;">Under construction...</p>
+            <div style="text-align: center; margin-top: 2rem;">
+                <img src="blackbeardwriting.webp" alt="Site under construction" style="max-width: 300px; height: auto;">
+            </div>
+        </article>
+    </main>
+    
+    <script src="flow-field.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Initializing flow field animation...');
+            try {
+                window.flowFieldAnimation = new MonochromeFlowFieldAnimation('flowFieldCanvas');
+                // Override the tint palette to use black instead of blue for archive page
+                window.flowFieldAnimation.config.tintPalette = [[0.2, 0.2, 0.2]]; // Dark gray/black
+                console.log('Flow field animation initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize flow field:', error);
+            }
+        });
+    </script>
+</body>
+</html>

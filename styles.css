@@ -1,0 +1,322 @@
+/* Clean, minimalist CSS */
+
+/* Font imports */
+@font-face {
+    font-family: 'SilkSerif';
+    src: url('silkserif/SilkSerif-TRIAL-ExtraLight-BF6740066e530ef.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SilkSerif';
+    src: url('silkserif/SilkSerif-TRIAL-Regular-BF6740066e17571.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'MinionPro';
+    src: url('minion-pro/MinionPro-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'MinionPro';
+    src: url('minion-pro/MinionPro-It.otf') format('opentype');
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'MinionPro';
+    src: url('minion-pro/MinionPro-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+/* CSS Variables */
+:root {
+    --primary-font: 'SilkSerif', serif;
+    --body-font: 'MinionPro', Georgia, serif;
+    --brand-blue: #0000CD;
+    --text-color: #333;
+    --muted-color: #666;
+    --light-gray: #999;
+    --dark-gray: #1a1a1a;
+    --content-max-width: 750px;
+}
+
+/* Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Base styles */
+html, body {
+    height: 100%;
+    background: white;
+}
+
+body {
+    font-family: var(--body-font);
+    font-size: 18px;
+    line-height: 1.7;
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Text selection */
+::selection {
+    background: black;
+    color: white;
+}
+
+::-moz-selection {
+    background: black;
+    color: white;
+}
+
+/* Header */
+.main-header {
+    padding: 3rem 0 0.75rem;
+}
+
+/* Navigation */
+.navbar {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+/* Brand */
+.nav-brand {
+    position: relative;
+}
+
+.brand-animation-box {
+    position: relative;
+    display: inline-block;
+    padding: 0.25rem 1.0rem;
+    margin: -0.25rem -1.0rem;
+}
+
+.brand-animation-box canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.brand-animation-box a {
+    position: relative;
+    z-index: 1;
+    font-family: var(--primary-font);
+    font-size: 1.9rem;
+    font-weight: 200;
+    letter-spacing: 0.02em;
+}
+
+.brand-animation-box a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.brand-animation-box a.active {
+    color: var(--brand-blue);
+}
+
+/* Navigation links */
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 2.5rem;
+    align-items: baseline;
+}
+
+.nav-links a {
+    font-family: var(--primary-font);
+    font-size: 1rem;
+    color: #000;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    color: #000;
+}
+
+.nav-links a.active {
+    color: var(--brand-blue);
+}
+
+/* Main content */
+.content {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding: 1.5rem 2rem 4rem;
+    flex: 1;
+}
+
+/* Text column */
+.text-column {
+    width: 100%;
+}
+
+/* Typography */
+.text-column h1 {
+    font-family: var(--primary-font);
+    font-size: 1.125rem;
+    font-weight: 400;
+    margin-bottom: 1rem;
+    color: var(--brand-blue);
+    letter-spacing: 0.01em;
+}
+
+.text-column h2 {
+    font-family: var(--primary-font);
+    font-size: 1.125rem;
+    font-weight: 400;
+    margin: 1.5rem 0 0.75rem;
+    color: var(--brand-blue);
+    letter-spacing: 0.01em;
+}
+
+.text-column p {
+    margin-bottom: 1.5rem;
+    text-align: justify;
+    hyphens: auto;
+}
+
+/* Drop cap removed - can be re-enabled if needed */
+/* .text-column > p:first-of-type::first-letter {
+    font-family: var(--primary-font);
+    font-size: 3.5rem;
+    float: left;
+    line-height: 1;
+    margin: 0 0.1em 0 0;
+    color: var(--brand-blue);
+} */
+
+/* Links in content */
+.text-column a {
+    color: #000;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    text-decoration-color: #000;
+    transition: text-decoration-color 0.3s ease;
+}
+
+.text-column a:hover {
+    color: #000;
+    text-decoration-color: #fff;
+    text-decoration-thickness: 1px;
+}
+
+/* Blue text class - apply to any element */
+.blue {
+    color: #000;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    body {
+        font-size: 16px;
+    }
+    
+    .main-header {
+        padding: 2rem 0 1.5rem;
+    }
+    
+    .navbar {
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 0 2rem;
+        align-items: center;
+    }
+    
+    .nav-brand {
+        font-size: 1.3rem;
+    }
+    
+    .nav-links {
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .nav-links a {
+        font-size: 1rem;
+    }
+    
+    .content {
+        padding: 2rem 1.5rem;
+    }
+    
+    .text-column h1 {
+        font-size: 1rem;
+    }
+    
+    .text-column h2 {
+        font-size: 1rem;
+    }
+    
+    .text-column p {
+        text-align: left;
+    }
+}
+
+/* Footer */
+.social-footer {
+    padding: 3rem 0 4rem;
+    text-align: center;
+}
+
+.social-links {
+    font-family: var(--primary-font);
+    font-size: 1rem;
+    font-weight: 400;
+}
+
+.social-links a {
+    color: #000;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 0 0.5rem;
+}
+
+.social-links a:hover {
+    color: #000;
+}
+
+.social-links .dot {
+    color: var(--light-gray);
+    margin: 0 0.25rem;
+}
+
+@media (max-width: 768px) {
+    .social-footer {
+        padding: 2rem 0 3rem;
+    }
+    
+    .social-links {
+        font-size: 0.95rem;
+    }
+    
+    .social-links a {
+        padding: 0 0.25rem;
+    }
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADVTYDV</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="main-header">
+        <nav class="navbar">
+            <div class="nav-brand">
+                <div class="brand-animation-box">
+                    <canvas id="flowFieldCanvas"></canvas>
+                    <a href="index.html" class="active">ADVTYDV</a>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li><a href="archive.html">Archive</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="content">
+        <article class="text-column">
+                <p>I'm Advait, a junior at UIUC majoring in Math and CS. I like doing AI research. Figuring out how systems learn, plan, and evolve is incredibly interesting to me. I also want to work towards a future where AI is safe and aligned.</p>
+                    
+                <p>I've worked on adversarial attacks with <a href="https://haohanwang.github.io/" target="_blank">Prof. Haohan Wang</a>, which resulted in <a href="https://arxiv.org/abs/2506.12274" target="_blank">InfoFlood</a>. Our work was covered by <a href="https://www.404media.co/researchers-jailbreak-ai-by-flooding-it-with-bullshit-jargon/" target="_blank">404 Media</a>, <a href="https://www.politico.com/newsletters/weekly-cybersecurity/2025/07/14/the-dual-edged-sword-of-ai-chatbots-00450657" target="_blank">POLITICO</a>, <a href="https://www.itbrew.com/stories/2025/07/16/jailbreaking-ai-with-flood-of-info-is-latest-way-to-exploit-technology" target="_blank">IT Brew</a>, and more. Recently, I spent the summer at <a href="https://www.matsprogram.org/" target="_blank">MATS</a>, where I worked on multi-agent system risks with <a href="https://www.oliversourbut.net/" target="_blank">Oliver Sourbut</a> and <a href="https://scholar.google.com/citations?user=ckPrWskAAAAJ&hl=en" target="_blank">Sid Black</a>. Expect a preprint soon!</p>
+                                
+                <p>You can reach me at <span class="blue">advaity2 at illinois.edu</span>, or send anonymous feedback <a href="https://www.admonymous.co/advait" target="_blank">here</a>.</p>
+                               
+                </article>
+    </main>
+    
+    <footer class="social-footer">
+        <div class="social-links">
+            <a href="AIRESUME.pdf" target="_blank">CV</a>
+            <span class="dot">·</span>
+            <a href="https://scholar.google.com/citations?user=Gvng-i0AAAAJ" target="_blank">Scholar</a>
+            <span class="dot">·</span>
+            <a href="https://www.linkedin.com/in/advaityadav/" target="_blank">LinkedIn</a>
+            <span class="dot">·</span>
+            <a href="https://github.com/advtydv" target="_blank">Github</a>
+            <span class="dot">·</span>
+            <a href="https://x.com/advtydv" target="_blank">X</a>
+        </div>
+    </footer>
+    <script src="flow-field.js"></script>
+    <script src="julia-box.js"></script>
+    <script src="synapse-flow.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Initializing Julia set animation as default...');
+            let synapseAnimation = null;
+            let isSynapseActive = false;
+            
+            try {
+                // Start with Julia set animation instead of flow field
+                window.juliaAnimation = new JuliaBoxAnimation('flowFieldCanvas');
+                console.log('Julia animation initialized successfully');
+                
+                // Set ADVTYDV link to black initially
+                const advtydvLink = document.querySelector('.brand-animation-box a');
+                if (advtydvLink) {
+                    advtydvLink.style.color = 'black';
+                    advtydvLink.classList.remove('active'); // Remove blue color class
+                }
+                
+                // Add synapse canvas to the background
+                const synapseCanvas = document.createElement('canvas');
+                synapseCanvas.id = 'synapse-background';
+                synapseCanvas.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    z-index: 1; // Above content temporarily for debugging
+                    opacity: 0;
+                    transition: opacity 0.5s ease;
+                    pointer-events: none;
+                `;
+                document.body.insertBefore(synapseCanvas, document.body.firstChild);
+                
+                // Add click handler to the black box from julia-box.js
+                // Override the existing black box click event
+                setTimeout(() => {
+                    const blackBox = document.getElementById('julia-trigger');
+                    if (blackBox) {
+                        // Remove existing event listeners by cloning
+                        const newBlackBox = blackBox.cloneNode(true);
+                        blackBox.parentNode.replaceChild(newBlackBox, blackBox);
+                        
+                        // Add transition for opacity changes
+                        newBlackBox.style.transition = 'opacity 0.3s, background 0.3s';
+                        
+                        // Add new click handler
+                        newBlackBox.addEventListener('click', () => {
+                            console.log('Black box clicked, current state:', isSynapseActive);
+                            
+                            if (!isSynapseActive) {
+                                // Enable synapse effect with random palette
+                                console.log('Enabling synapse effect...');
+                                isSynapseActive = true;
+                                if (synapseAnimation && synapseAnimation.animationId) {
+                                    cancelAnimationFrame(synapseAnimation.animationId);
+                                }
+                                // Create new animation with random palette (null = random)
+                                synapseAnimation = new SynapseFlowBackgroundV2('synapse-background', null);
+                                synapseCanvas.style.opacity = '0.8'; // More visible for debugging
+                                newBlackBox.style.opacity = '0.2'; // Make black box much fainter
+                            } else {
+                                // Disable synapse effect  
+                                console.log('Disabling synapse effect...');
+                                synapseCanvas.style.opacity = '0';
+                                newBlackBox.style.opacity = '1'; // Back to normal opacity
+                                isSynapseActive = false;
+                                if (synapseAnimation && synapseAnimation.animationId) {
+                                    cancelAnimationFrame(synapseAnimation.animationId);
+                                    synapseAnimation = null;
+                                }
+                            }
+                        });
+                    }
+                }, 100);
+                
+            } catch (error) {
+                console.error('Failed to initialize animations:', error);
+            }
+        });
+    </script>
+</body>
+</html>
