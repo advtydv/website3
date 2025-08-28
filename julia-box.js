@@ -250,8 +250,8 @@ document.addEventListener('DOMContentLoaded', () => {
   blackBox.id = 'julia-trigger';
   blackBox.style.cssText = `
     position: fixed;
-    bottom: 20px;
-    left: 20px;
+    bottom: 60px;
+    left: 40px;
     width: 20px;
     height: 20px;
     background: black;

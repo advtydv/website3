@@ -30,7 +30,7 @@ class SynapseFlowBackgroundV2 {
           name: "Vaporwave",
           background: [0.5, 0.0, 0.5, 0.3],
           staticLines: [1.0, 0.0, 1.0, 0.8],
-          activeLines: [0.0, 1.0, 1.0, 1.0],
+          activeLines: [0.2, 1.0, 1.0, 1.0], // Brighter cyan
           nodes: [1.0, 0.4, 0.8, 1.0]
         },
         { // Matrix: Green on black
@@ -46,6 +46,27 @@ class SynapseFlowBackgroundV2 {
           staticLines: [1.0, 0.5, 0.0, 0.8],
           activeLines: [1.0, 0.0, 0.3, 1.0],
           nodes: [1.0, 0.9, 0.0, 1.0]
+        },
+        { // Arctic: Ice blue/white
+          name: "Arctic",
+          background: [0.9, 0.95, 1.0, 0.2],
+          staticLines: [0.5, 0.7, 0.9, 0.6],
+          activeLines: [0.2, 0.6, 1.0, 1.0],
+          nodes: [0.8, 0.9, 1.0, 1.0]
+        },
+        { // Lava: Red/Orange/Black
+          name: "Lava",
+          background: [0.1, 0.0, 0.0, 0.6],
+          staticLines: [0.8, 0.2, 0.0, 0.8],
+          activeLines: [1.0, 0.5, 0.0, 1.0],
+          nodes: [1.0, 0.3, 0.0, 1.0]
+        },
+        { // Galaxy: Purple/Blue space
+          name: "Galaxy",
+          background: [0.05, 0.0, 0.15, 0.5],
+          staticLines: [0.4, 0.2, 0.8, 0.7],
+          activeLines: [0.8, 0.5, 1.0, 1.0],
+          nodes: [1.0, 0.8, 1.0, 1.0]
         }
       ];
       
@@ -113,12 +134,38 @@ class SynapseFlowBackgroundV2 {
       if (!this.lineProgram || !this.pointProgram) { console.error("SynapseFlowV2 Error: Failed init."); return; }
   
       this.resizeCanvas(); // Size the canvas initially
+      
+      // Start with initial activity - fire random nodes to create initial pulses
+      this.initializeActivity();
+      
       this.animate();
       this.setupResizeHandler();
       this.setupMousePositionHandler();
       this.setupContextHandlers();
     }
   
+    /** Initialize with some activity to start with a denser network */
+    initializeActivity() {
+      // Start with 20-30 random pulses for initial activity
+      const initialPulseCount = 20 + Math.floor(Math.random() * 10);
+      
+      for (let i = 0; i < initialPulseCount; i++) {
+        // Pick a random node with connections
+        const nodeIdx = Math.floor(Math.random() * this.nodeCount);
+        const node = this.nodes[nodeIdx];
+        
+        if (node.connections.length > 0) {
+          // Fire this node to create initial pulses
+          this.firePulseFromNode(nodeIdx);
+          
+          // Also boost the node's initial brightness for visual effect
+          node.brightness = 0.5 + Math.random() * 0.5;
+        }
+      }
+      
+      console.log(`SynapseFlowV2: Started with ${this.pulses.length} initial pulses`);
+    }
+    
     /** Generates nodes and calculates static connections */
     generateNetwork() {
       this.nodes = [];
@@ -226,8 +273,10 @@ class SynapseFlowBackgroundV2 {
           float core = smoothstep(0.0, 0.15, 1.0 - dist) * 1.5;
           float shape = 1.0 - smoothstep(0.3, 0.5, dist);
           float intensity = min(1.0, (shape + core) * v_brightness);
-          // Use palette color for nodes
-          gl_FragColor = vec4(u_nodeColor.rgb, intensity * u_nodeColor.a);
+          // Use palette color for nodes - ensure minimum visibility
+          float minAlpha = 0.3; // Minimum node visibility
+          float alpha = max(minAlpha, intensity) * u_nodeColor.a;
+          gl_FragColor = vec4(u_nodeColor.rgb, alpha);
         }
       `;
   
@@ -447,7 +496,7 @@ class SynapseFlowBackgroundV2 {
   
         // --- 3. Draw Nodes ---
         gl.useProgram(this.pointProgram);
-        gl.uniform1f(this.locations['u_pointSize'], 4.0); // Node size
+        gl.uniform1f(this.locations['u_pointSize'], 6.0); // Node size (increased for visibility)
         const nc = this.currentPalette.nodes;
         gl.uniform4f(this.locations['u_nodeColor'], nc[0], nc[1], nc[2], nc[3]); // Node color from palette
         gl.bindBuffer(gl.ARRAY_BUFFER, this.nodeBuffer);
@@ -457,7 +506,7 @@ class SynapseFlowBackgroundV2 {
   
         // --- 4. Draw Pulses ---
         if (pulseData.length > 0) {
-          gl.uniform1f(this.locations['u_pointSize'], 5.0); // Pulse size (larger)
+          gl.uniform1f(this.locations['u_pointSize'], 8.0); // Pulse size (larger and more visible)
           gl.bindBuffer(gl.ARRAY_BUFFER, this.pulseBuffer);
           gl.enableVertexAttribArray(this.locations['a_vertexData']); // Rebind might not be needed
           gl.vertexAttribPointer(this.locations['a_vertexData'], 3, gl.FLOAT, false, 0, 0);
@@ -481,12 +530,6 @@ class SynapseFlowBackgroundV2 {
       const deltaTime = (now - this.lastFrameTime) / 1000.0; 
       this.lastFrameTime = now;
       
-      // Debug: log every 60 frames (roughly once per second)
-      if (!this.frameCount) this.frameCount = 0;
-      this.frameCount++;
-      if (this.frameCount % 60 === 0) {
-        console.log('SynapseFlowV2: Animation running, frame', this.frameCount);
-      }
       
       this.updateSimulation(deltaTime); 
       this.render();
@@ -501,7 +544,6 @@ class SynapseFlowBackgroundV2 {
       const dpr=window.devicePixelRatio||1; 
       const tw=Math.round(dw*dpr);
       const th=Math.round(dh*dpr); 
-      console.log('SynapseFlowV2: Resizing canvas to', tw, 'x', th, 'pixels');
       this.canvas.width=tw;
       this.canvas.height=th;
       this.canvas.style.width = dw + 'px';
